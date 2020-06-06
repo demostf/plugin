@@ -145,5 +145,6 @@ public ShowResponse()
 	new String:output[512];
 	ReadFileString(resultFile, output, sizeof(output));
 	PrintToChatAll("[demos.tf]: %s", output);
+    LogToGame("[demos.tf]: %s", output);
 	return;
 }
