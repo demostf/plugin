@@ -47,6 +47,8 @@ new Handle:postForm = INVALID_HANDLE;
 new Handle:g_hCvarRedTeamName = INVALID_HANDLE;
 new Handle:g_hCvarBlueTeamName = INVALID_HANDLE;
 
+new Handle:g_hDemoUploaded = INVALID_HANDLE;
+
 public OnPluginStart()
 {
 	g_hCvarAPIKey = CreateConVar("sm_demostf_apikey", "", "API key for demos.tf", FCVAR_PROTECTED);
@@ -54,8 +56,15 @@ public OnPluginStart()
 	g_hCvarRedTeamName = FindConVar("mp_tournament_redteamname");
 	g_hCvarBlueTeamName = FindConVar("mp_tournament_blueteamname");
 	
+	g_hDemoUploaded = CreateGlobalForward("DemoUploaded", ET_Ignore, Param_Cell, Param_String, Param_String);
+
 	RegServerCmd("tv_record", Command_StartRecord);
 	RegServerCmd("tv_stoprecord", Command_StopRecord);
+}
+
+public OnPluginEnd()
+{
+	CloseHandle(g_hDemoUploaded);
 }
 
 public Action:Command_StartRecord(args)
@@ -128,6 +137,7 @@ public onComplete(Handle:hndl, CURLcode:code)
 		CloseHandle(output_file);
 		CloseHandle(hndl);
 		PrintToChatAll("cURLCode error: %d", code);
+		CallDemoUploaded(false, "", "");
 	}
 	else
 	{
@@ -145,6 +155,42 @@ public ShowResponse()
 	new String:output[512];
 	ReadFileString(resultFile, output, sizeof(output));
 	PrintToChatAll("[demos.tf]: %s", output);
-    LogToGame("[demos.tf]: %s", output);
+	LogToGame("[demos.tf]: %s", output);
+
+	new String:demoid[16];
+	new String:url[256];
+	new bool:success;
+	char url_parts[16][4];
+	strcopy(url, sizeof(url), output);
+	
+	// Get the url part
+	ReplaceString(url, sizeof(url), "STV available at: ", "");
+	// Split the string on '/'
+	ExplodeString(url, "/", url_parts, sizeof(url_parts[]), sizeof(url_parts));
+
+	// Find the last part of the url
+	for (int i = sizeof(url_parts[]) - 1; i >= 0; i--)
+	{
+		if (!StrEqual(url_parts[i], "")){
+			demoid = url_parts[i];
+			break;
+		}
+	}
+
+	CallDemoUploaded(success, demoid, url);
+	
 	return;
+}
+
+
+void CallDemoUploaded(bool success, const char[] demoid, const char[] url) {
+	Call_StartForward(g_hDemoUploaded);
+
+	// Push parameters one at a time
+	Call_PushCell(success);
+	Call_PushString(demoid);
+	Call_PushString(url);
+
+	// Finish the call
+	Call_Finish();
 }
