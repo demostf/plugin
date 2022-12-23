@@ -7,7 +7,7 @@ public Plugin:myinfo =
 	name = "demos.tf uploader",
 	author = "Icewind",
 	description = "Auto-upload match stv to demos.tf",
-	version = "0.3",
+	version = "0.3.1",
 	url = "https://demos.tf"
 };
 
@@ -163,23 +163,27 @@ public ShowResponse()
 	char url_parts[4][16];
 
 	strcopy(url, sizeof(url), output);
-	
-	// Get the url part
-	ReplaceString(url, sizeof(url), "STV available at: ", "");
-	// Split the string on '/'
-	ExplodeString(url, "/", url_parts, sizeof(url_parts), sizeof(url_parts[]));
 
-	// Find the last part of the url
-	for (int i = sizeof(url_parts) -1; i >= 0; i--)
+	if (StrContains(url, "STV available at: ") != -1)
 	{
-		if (!StrEqual(url_parts[i], "")){
-			demoid = url_parts[i];
-			break;
-		}
-	}
+		// Get the url part
+		ReplaceString(url, sizeof(url), "STV available at: ", "");
+		// Split the string on '/'
+		ExplodeString(url, "/", url_parts, sizeof(url_parts), sizeof(url_parts[]));
 
-	CallDemoUploaded(true, demoid, url);
+		// Find the last part of the url
+		for (int i = sizeof(url_parts) -1; i >= 0; i--)
+		{
+			if (!StrEqual(url_parts[i], "")){
+				demoid = url_parts[i];
+				break;
+			}
+		}
+		CallDemoUploaded(true, demoid, url);
+		return;
+	}
 	
+	CallDemoUploaded(false, "", "");
 	return;
 }
 
