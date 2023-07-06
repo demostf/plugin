@@ -13,15 +13,14 @@ public Plugin myinfo =
 };
 
 int CURL_Default_opt[][2] =  {
-    { view_as<int>(CURLOPT_NOSIGNAL), 				1 }, 
-    { view_as<int>(CURLOPT_NOPROGRESS), 			1 }, 
-    { view_as<int>(CURLOPT_TIMEOUT), 				600 }, 
-    { view_as<int>(CURLOPT_CONNECTTIMEOUT), 		600 }, 
-    { view_as<int>(CURLOPT_USE_SSL), 				CURLUSESSL_TRY }, 
-    { view_as<int>(CURLOPT_SSL_VERIFYPEER), 		0 }, 
-    { view_as<int>(CURLOPT_SSL_VERIFYHOST), 		0 }, 
-    { view_as<int>(CURLOPT_VERBOSE), 				0 }
-    
+	{ view_as<int>(CURLOPT_NOSIGNAL),               1 }, 
+	{ view_as<int>(CURLOPT_NOPROGRESS),             1 }, 
+	{ view_as<int>(CURLOPT_TIMEOUT),                600 }, 
+	{ view_as<int>(CURLOPT_CONNECTTIMEOUT),         600 }, 
+	{ view_as<int>(CURLOPT_USE_SSL),                CURLUSESSL_TRY }, 
+	{ view_as<int>(CURLOPT_SSL_VERIFYPEER),         0 }, 
+	{ view_as<int>(CURLOPT_SSL_VERIFYHOST),         0 }, 
+	{ view_as<int>(CURLOPT_VERBOSE),                0 }
 };
 
 
