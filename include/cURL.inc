@@ -9,7 +9,7 @@
 
 /*
 ========================================
-The Following CURLOPT_* NOT support:
+The Following CURLOPT_* NOT support
 ERRORBUFFER              // use curl_get_error_buffer
 WRITEINFO                // ???
 PROGRESSFUNCTION         // unused
@@ -52,7 +52,7 @@ CLOSESOCKETDATA          // unsupport
 
 /*
 ========================================
-The Following CURLOPT_* supports the "file://" notation.
+The Following CURLOPT_* supports the "file //" notation.
 COOKIEFILE
 COOKIEJAR
 RANDOM_FILE
@@ -70,14 +70,14 @@ SSH_KNOWNHOSTS
 
 /*
 ========================================
-The Following CURLINFO_* NOT support:
+The Following CURLINFO_* NOT support
 CURLINFO_SLIST
 
 ========================================*/
 
 /*
 ========================================
-The Following CURLFORM_* NOT support:
+The Following CURLFORM_* NOT support
 CURLFORM_PTRNAME
 CURLFORM_PTRCONTENTS
 CURLFORM_ARRAY
@@ -126,6 +126,7 @@ enum SendRecv_Act {
 enum Openssl_Hash {
 	Openssl_Hash_MD5 = 0,
 	Openssl_Hash_MD4,
+	Openssl_Hash_MD2,
 	Openssl_Hash_SHA,
 	Openssl_Hash_SHA1,
 	Openssl_Hash_SHA224,
@@ -150,8 +151,8 @@ enum Openssl_Hash {
  */
 typeset CURL_OnComplete
 {
-	function void(Handle hndl, CURLcode code);
-	function void(Handle hndl, CURLcode code, any data);
+	function void (Handle hndl, CURLcode code);
+	function void (Handle hndl, CURLcode code , any data);
 };
 
 /**
@@ -164,8 +165,8 @@ typeset CURL_OnComplete
  */
 typeset CURL_OnSend
 {
-	function SendRecv_Act(Handle hndl, CURLcode code, const int last_sent_dataSize);
-	function SendRecv_Act(Handle hndl, CURLcode code, const int last_sent_dataSize, any data);
+	function SendRecv_Act (Handle hndl, CURLcode code, const int last_sent_dataSize);
+	function SendRecv_Act (Handle hndl, CURLcode code, const int last_sent_dataSize, any data);
 }
 
 /**
@@ -178,8 +179,8 @@ typeset CURL_OnSend
  */
 typeset CURL_OnReceive
 {
-	function SendRecv_Act(Handle hndl, CURLcode code, const char[] receiveData, int dataSize);
-	function SendRecv_Act(Handle hndl, CURLcode code, const char[] receiveData, int dataSize, any data);
+	function SendRecv_Act (Handle hndl, CURLcode code, const char[] receiveData, const int dataSize);
+	function SendRecv_Act (Handle hndl, CURLcode code, const char[] receiveData, const int dataSize, any data);
 }
 
 /**
@@ -191,20 +192,20 @@ typeset CURL_OnReceive
  */
 typeset Openssl_Hash_Complete
 {
-	function void(const bool success, const char[] buffer);
-	function void(const bool success, const char[] buffer, any data);
+	function void (const bool success, const char[] buffer);
+	function void (const bool success, const char[] buffer, any data);
 }
 
 
 typeset CURL_Function_CB
 {
 	// CURLOPT_WRITEFUNCTION
-	function void(Handle hndl, const char[] buffer, int bytes, int nmemb);
-	function void(Handle hndl, const char[] buffer, int bytes, int nmemb, any data);
-	
+	function void (Handle hndl, const char[] buffer, const int bytes, const int nmemb);
+	function void (Handle hndl, const char[] buffer, const int bytes, const int nmemb, any data);
+
 	// CURLOPT_READFUNCTION
-	function void(Handle hndl, int bytes, int nmemb);
-	function void(Handle hndl, int bytes, int nmemb, any data);
+	function void (Handle hndl, const int bytes, const int nmemb);
+	function void (Handle hndl, const int bytes, const int nmemb, any data);
 }
 
 /*************************************************************************************************/
@@ -226,7 +227,7 @@ native Handle curl_easy_init();
  * @ param String		buffer	The value to set the option to.
  * @ return bool				1 on success. 0 = The option not accept string or unsupport.
  */
-native bool curl_easy_setopt_string(Handle hndl, CURLoption opt, char []buffer);
+native bool curl_easy_setopt_string(Handle hndl, CURLoption opt, const char[] buffer);
 
 /**
  * Set a curl option for CURLOPTTYPE_LONG type
@@ -242,8 +243,8 @@ native bool curl_easy_setopt_int(Handle hndl, CURLoption opt, int value);
  * Set a curl option for CURLOPTTYPE_LONG type
  * @ example"
 	new opt[][2] = {
-		{_:CURLOPT_NOPROGRESS,1},
-		{_:CURLOPT_VERBOSE,0}
+		{_ CURLOPT_NOPROGRESS,1},
+		{_ CURLOPT_VERBOSE,0}
 	};
  *
  * @ param Handle		hndl		The handle of the curl to be used. May be INVALID_HANDLE if not essential.
@@ -251,7 +252,7 @@ native bool curl_easy_setopt_int(Handle hndl, CURLoption opt, int value);
  * @ param cell_t		array_size	The array size.
  * @ return bool					1 on success. 0 = The option not accept integer or unsupport.
  */
-native bool curl_easy_setopt_int_array(Handle hndl, int [][]array, int array_size);
+native bool curl_easy_setopt_int_array(Handle hndl, int[][] array, int array_size); // int array[][2]
 
 /**
  * Set a curl option for CURLOPTTYPE_OFF_T type
@@ -261,7 +262,7 @@ native bool curl_easy_setopt_int_array(Handle hndl, int [][]array, int array_siz
  * @ param String		buffer	The value to set the option to.
  * @ return bool				1 on success. 0 = The option not accept string or unsupport.
  */
-native bool curl_easy_setopt_int64(Handle hndl, CURLoption opt, const char []buffer);
+native bool curl_easy_setopt_int64(Handle hndl, CURLoption opt, const char buffer);
 
 /**
  * Set a curl option for CURLOPTTYPE_OBJECTPOINT type
@@ -329,7 +330,7 @@ native void curl_easy_perform_thread(Handle hndl, CURL_OnComplete perform_callba
 native void curl_easy_send_recv(Handle hndl, CURL_OnSend send_callback, CURL_OnReceive receive_callback, CURL_OnComplete complete_callback, SendRecv_Act act, int send_timeout, int recv_timeout, int recv_buffer_Size = 1024, any value=0);
 
 /**
- * Send a signal to a send & receive curl handle 
+ * Send a signal to a send & receive curl handle
  * @ param Handle			hndl			The handle of the send & receive curl to be used.
  * @ param SendRecv_Act		act				The SendRecv_Act action after the singal
  * @ return bool							1 on success. 0 = not a curl_easy_send_recv() curl, or not running/waiting
@@ -350,7 +351,7 @@ native bool curl_send_recv_IsWaiting(Handle hndl);
  * @ param cell_t			size			if specified the \0 terminator will not be included
  * @ noreturn
  */
-native void curl_set_send_buffer(Handle hndl, const char []data, int size=-1);
+native void curl_set_send_buffer(Handle hndl, const char[] data, int size=-1);
 
 /**
  * Send the receive data size for send & receive curl handle
@@ -383,7 +384,7 @@ native void curl_set_recv_timeout(Handle hndl, int timeout);
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ noreturn
  */
-native void curl_get_error_buffer(Handle hndl, char []buffer, int maxlen);
+native void curl_get_error_buffer(Handle hndl, char[] buffer, int maxlen);
 
 /**
  * Extract information from a curl handle. (CURLINFO_STRING only)
@@ -393,7 +394,7 @@ native void curl_get_error_buffer(Handle hndl, char []buffer, int maxlen);
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ return 						The CURLcode code, see cURL_header.inc
  */
-native CURLcode curl_easy_getinfo_string(Handle hndl, CURLINFO info, char []buffer, int maxlen);
+native CURLcode curl_easy_getinfo_string(Handle hndl, CURLINFO info, char[] buffer, int maxlen);
 
 /**
  * Extract information from a curl handle. (CURLINFO_LONG, CURLINFO_DOUBLE only)
@@ -405,24 +406,24 @@ native CURLcode curl_easy_getinfo_string(Handle hndl, CURLINFO info, char []buff
 native CURLcode curl_easy_getinfo_int(Handle hndl, CURLINFO info, any &value);
 
 /**
- * URL encodes the given string 
+ * URL encodes the given string
  * @ param Handle		hndl		The handle of the curl to be used.
  * @ param String		url			The string to encodes.
  * @ param String		buffer		Destination string buffer to copy to.
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ return 						1 on success.
  */
-native bool curl_easy_escape(Handle hndl, const char []url, char []buffer, int maxlen);
+native bool curl_easy_escape(Handle hndl, const char[] url, char[] buffer, int maxlen);
 
 /**
- * URL decodes the given string 
+ * URL decodes the given string
  * @ param Handle		hndl		The handle of the curl to be used.
  * @ param String		url			The string to dencodes.
  * @ param String		buffer		Destination string buffer to copy to.
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ return 						The output length.
  */
-native int curl_easy_unescape(Handle hndl, const char []url, char []buffer, int maxlen);
+native int curl_easy_unescape(Handle hndl, const char[] url, char[] buffer, int maxlen);
 
 /**
  * Return string describing error code
@@ -431,7 +432,7 @@ native int curl_easy_unescape(Handle hndl, const char []url, char []buffer, int 
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ noreturn
  */
-native void curl_easy_strerror(CURLcode code, char []buffer, int maxlen);
+native void curl_easy_strerror(CURLcode code, char[] buffer, int maxlen);
 
 /**
  * Returns the libcurl version string
@@ -439,7 +440,7 @@ native void curl_easy_strerror(CURLcode code, char []buffer, int maxlen);
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ noreturn
  */
-native void curl_version(char []buffer, int maxlen);
+native void curl_version(char[] buffer, int maxlen);
 
 /**
  * Returns the libcurl supported protocols string
@@ -447,7 +448,7 @@ native void curl_version(char []buffer, int maxlen);
  * @ param cell_t		maxlen		Destination buffer length (includes null terminator).
  * @ noreturn
  */
-native void curl_protocols(char []buffer, int maxlen);
+native void curl_protocols(char[] buffer, int maxlen);
 
 /**
  * Returns the libcurl supported features
@@ -471,7 +472,7 @@ native int curl_features();
  * @ param mode			Open mode.
  * @ return				A Handle to the file, INVALID_HANDLE on open error.
  */
-native Handle curl_OpenFile(const char []file, const char []mode);
+native Handle curl_OpenFile(const char[] file, const char[] mode);
 
 
 /**
@@ -521,17 +522,17 @@ native Handle curl_slist();
  * @ param String		buffer		The string to add
  * @ noreturn
  */
-native void curl_slist_append(Handle hndl, const char []buffer);
+native void curl_slist_append(Handle hndl, const char[] buffer);
 
 /**
  * Hash a file
- * @ parma String					file 				The file path. supports the "file://" notation.
+ * @ parma String					file 				The file path. supports the "file //" notation.
  * @ param Openssl_Hash				algorithm			Hash Algorithm.
  * @ param Openssl_Hash_Complete	complete_callback	The complete callback.
  * @ param cell_t					value				Value to set.
  * @ noreturn
  */
-native curl_hash_file(const char []file, Openssl_Hash algorithm, Openssl_Hash_Complete complete_callback, any value=0);
+native void curl_hash_file(const char[] file, Openssl_Hash algorithm, Openssl_Hash_Complete complete_callback, any value=0);
 
 /**
  * Hash a string
@@ -542,14 +543,13 @@ native curl_hash_file(const char []file, Openssl_Hash algorithm, Openssl_Hash_Co
  * @ param cell_t			maxlen			Destination buffer length (includes null terminator).
  * @ return									1 on success
  */
-native bool curl_hash_string(const char []input, int dataSize, Openssl_Hash algorithm, char []buffer, int maxlength);
+native bool curl_hash_string(const char[] input, int dataSize, Openssl_Hash algorithm, char[] buffer, int maxlength);
 
 
 /**
  * Do not edit below this line!
  */
-public Extension __ext_curl = 
-{
+public Extension __ext_curl = {
 	name = "curl",
 	file = "curl.ext",
 #if defined AUTOLOAD_EXTENSIONS
