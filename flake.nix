@@ -23,7 +23,6 @@
       spEnv = pkgs.sourcepawn.buildEnv [pkgs.sourcepawn.includes.sourcemod curlInclude];
     in rec {
       packages = {
-        inherit spEnv curlInclude;
         plugin = pkgs.buildSourcePawnScript {
           name = "plugin";
           src = ./demostf.sp;
