@@ -6,20 +6,18 @@
 public Plugin myinfo =
 {
 	name = "demos.tf uploader",
-	author = "Icewind",
+	author = "Icewind / sappho.io",
 	description = "Auto-upload match stv to demos.tf",
-	version = "0.3.1",
+	version = "0.3.2-beta-sappho",
 	url = "https://demos.tf"
 };
 
-int CURL_Default_opt[][2] =  {
+int CURL_Default_opt[][2] = {
 	{ view_as<int>(CURLOPT_NOSIGNAL),               1 }, 
 	{ view_as<int>(CURLOPT_NOPROGRESS),             1 }, 
-	{ view_as<int>(CURLOPT_TIMEOUT),                600 }, 
-	{ view_as<int>(CURLOPT_CONNECTTIMEOUT),         600 }, 
-	{ view_as<int>(CURLOPT_USE_SSL),                CURLUSESSL_TRY }, 
-	{ view_as<int>(CURLOPT_SSL_VERIFYPEER),         0 }, 
-	{ view_as<int>(CURLOPT_SSL_VERIFYHOST),         0 }, 
+	{ view_as<int>(CURLOPT_TIMEOUT),                30 }, 
+	{ view_as<int>(CURLOPT_CONNECTTIMEOUT),         30 }, 
+	{ view_as<int>(CURLOPT_USE_SSL),                CURLUSESSL_ALL }, 
 	{ view_as<int>(CURLOPT_VERBOSE),                0 }
 };
 
@@ -37,7 +35,7 @@ public void CStrToLower(char[] buffer) {
 	}
 }
 
-#define CURL_DEFAULT_OPT(%1) curl_easy_setopt_int_array(%1, CURL_Default_opt, sizeof(CURL_Default_opt))
+#define CURL_DEFAULT_OPT(%1) curl_easy_setopt_int_array( %1, CURL_Default_opt, sizeof(CURL_Default_opt) )
 
 char g_sDemoName[256] = "";
 char g_sLastDemoName[256] = "";
@@ -84,6 +82,7 @@ public Action Command_StopRecord(int args)
 	TrimString(g_sDemoName);
 	if (strlen(g_sDemoName) != 0) {
 		PrintToChatAll("[demos.tf]: Demo recording completed");
+		LogMessage("Demo recording completed");
 		g_sLastDemoName = g_sDemoName;
 		g_sDemoName = "";
 		CreateTimer(3.0, StartDemoUpload);
@@ -108,7 +107,15 @@ void UploadDemo(const char[] fullPath)
 	char Map[64];
 	GetCurrentMap(Map, sizeof(Map));
 	PrintToChatAll("[demos.tf]: Uploading demo %s", fullPath);
+	LogMessage("Uploading demo %s", fullPath);
+
 	Handle curl = curl_easy_init();
+	if (!curl)
+	{
+		LogError("Couldn't init curl handle!");
+	}
+
+
 	CURL_DEFAULT_OPT(curl);
 	char bluname[128];
 	char redname[128];
@@ -139,7 +146,10 @@ public void onComplete(Handle hndl, CURLcode code)
 		curl_easy_strerror(code, error_buffer, sizeof(error_buffer));
 		CloseHandle(output_file);
 		CloseHandle(hndl);
-		PrintToChatAll("cURLCode error: %d", code);
+
+		PrintToChatAll("cURLCode error: %s", error_buffer);
+		LogError("cURLCode error: %s", error_buffer);
+
 		CallDemoUploaded(false, "", "");
 	}
 	else
@@ -159,6 +169,7 @@ void ShowResponse()
 	ReadFileString(resultFile, output, sizeof(output));
 	PrintToChatAll("[demos.tf]: %s", output);
 	LogToGame("[demos.tf]: %s", output);
+	LogMessage("%s", output);
 
 	char demoid[16];
 	char url[256];
