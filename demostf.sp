@@ -8,7 +8,7 @@ public Plugin myinfo =
 	name = "demos.tf uploader",
 	author = "Icewind / sappho.io",
 	description = "Auto-upload match stv to demos.tf",
-	version = "0.3.2-beta-sappho",
+	version = "0.3.2",
 	url = "https://demos.tf"
 };
 
