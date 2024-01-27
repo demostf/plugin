@@ -15,7 +15,7 @@ public Plugin myinfo =
 int CURL_Default_opt[][2] = {
 	{ view_as<int>(CURLOPT_NOSIGNAL),               1 }, 
 	{ view_as<int>(CURLOPT_NOPROGRESS),             1 }, 
-	{ view_as<int>(CURLOPT_TIMEOUT),                30 }, 
+	{ view_as<int>(CURLOPT_TIMEOUT),                60 }, 
 	{ view_as<int>(CURLOPT_CONNECTTIMEOUT),         30 }, 
 	{ view_as<int>(CURLOPT_USE_SSL),                CURLUSESSL_ALL }, 
 	{ view_as<int>(CURLOPT_VERBOSE),                0 }
