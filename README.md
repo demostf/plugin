@@ -1,3 +1,5 @@
+# Moved to https://codeberg.org/demostf/plugin
+
 # plugin
 
 Automatically upload recorded stv demos to [demos.tf](https://demos.tf)
